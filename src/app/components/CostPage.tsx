@@ -1,9 +1,12 @@
-import { DollarSign, Upload, RefreshCw, Search, ChevronDown, Package } from "lucide-react";
+import { DollarSign, Upload, RefreshCw, ChevronDown, Package } from "lucide-react";
+import { useState } from "react";
 import { InfoBanner } from "./InfoBanner";
 import { PageHeader } from "./PageHeader";
 import { EmptyState } from "./EmptyState";
 
 export function CostPage() {
+  const [guideOpen, setGuideOpen] = useState(true);
+
   return (
     <div className="p-6 space-y-6 max-w-[1200px] mx-auto">
       <PageHeader
@@ -28,11 +31,20 @@ export function CostPage() {
 
       {/* Info accordion */}
       <div className="bg-white rounded-2xl border border-border p-5">
-        <div className="flex items-center gap-2 text-[#3b6cf5]" style={{ fontSize: '0.85rem', fontWeight: 500 }}>
+        <button
+          onClick={() => setGuideOpen((current) => !current)}
+          className="flex w-full items-center gap-2 text-[#3b6cf5]"
+          style={{ fontSize: '0.85rem', fontWeight: 500 }}
+        >
           <span className="w-5 h-5 rounded-full bg-[#f0f4ff] flex items-center justify-center text-[0.7rem]">ℹ</span>
           옵션 상품 매입가 입력 방법
-          <ChevronDown className="w-4 h-4 ml-auto" />
-        </div>
+          <ChevronDown className={`w-4 h-4 ml-auto transition-transform ${guideOpen ? "" : "-rotate-90"}`} />
+        </button>
+        {guideOpen ? (
+          <p className="mt-3 text-[#6b7294]" style={{ fontSize: '0.8rem', lineHeight: 1.6 }}>
+            옵션별 매입가를 먼저 정리해두면 할인 계산과 마진 검토에서 동일한 기준으로 상품별 수익성을 비교할 수 있습니다.
+          </p>
+        ) : null}
       </div>
 
       {/* Filters */}
