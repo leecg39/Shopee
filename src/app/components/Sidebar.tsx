@@ -1,18 +1,23 @@
-import { NavLink } from "react-router";
+import { NavLink, useNavigate } from "react-router";
 import {
   LayoutDashboard,
   ClipboardList,
+  Camera,
   DollarSign,
+  Bell,
   TrendingUp,
   Percent,
   Tag,
   Sparkles,
   Link2,
+  Warehouse,
   Gift,
   ChevronDown,
   Zap,
+  Truck,
 } from "lucide-react";
 import { useState } from "react";
+import { useDemoData } from "../state/demo-store";
 
 const navItems = [
   { path: "/dashboard", label: "대시보드", icon: LayoutDashboard },
@@ -22,11 +27,18 @@ const navItems = [
   { path: "/discounts", label: "대량 할인", icon: Percent },
   { path: "/campaign", label: "캠페인 가격", icon: Tag },
   { path: "/sourcing", label: "대량 소싱", icon: Sparkles, badge: "부가 서비스" },
-  { path: "/integration", label: "Shopee 연동", icon: Link2 },
+  { path: "/integration", label: "채널 연동", icon: Link2 },
+  { path: "/products/register", label: "상품 등록", icon: Camera },
+  { path: "/shipping", label: "포장 & 배송", icon: Truck },
+  { path: "/notifications", label: "알림 센터", icon: Bell },
+  { path: "/inventory", label: "재고 관리", icon: Warehouse },
 ];
 
 export function Sidebar() {
+  const navigate = useNavigate();
   const [menuOpen, setMenuOpen] = useState(true);
+  const { channels } = useDemoData();
+  const connectedChannels = channels.filter((channel) => channel.status === "connected").length;
 
   return (
     <aside className="w-[240px] h-screen bg-white border-r border-border flex flex-col shrink-0 sticky top-0">
@@ -41,7 +53,7 @@ export function Sidebar() {
               <span className="text-[#1a1d2e]" style={{ fontSize: '1.1rem', fontWeight: 700 }}>셀잇</span>
               <span className="text-[#3b6cf5]" style={{ fontSize: '1.1rem', fontWeight: 700 }}>파파</span>
             </div>
-            <p className="text-[#6b7294]" style={{ fontSize: '0.7rem' }}>크로스보더 Shopee 관리 솔루션</p>
+            <p className="text-[#6b7294]" style={{ fontSize: '0.7rem' }}>멀티채널 이커머스 통합 관리</p>
           </div>
         </div>
       </div>
@@ -90,7 +102,7 @@ export function Sidebar() {
 
       {/* Bottom */}
       <div className="px-3 pb-4 space-y-3">
-        <button className="w-full flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-[#3b6cf5] to-[#6366f1] text-white rounded-xl shadow-lg shadow-blue-200 hover:shadow-xl hover:shadow-blue-300 transition-all">
+        <button onClick={() => navigate("/landing#pricing")} className="w-full flex items-center gap-2.5 px-4 py-3 bg-gradient-to-r from-[#3b6cf5] to-[#6366f1] text-white rounded-xl shadow-lg shadow-blue-200 hover:shadow-xl hover:shadow-blue-300 transition-all">
           <Zap className="w-4 h-4" />
           <div className="text-left">
             <div style={{ fontSize: '0.8rem', fontWeight: 600 }}>프리미엄 업그레이드</div>
@@ -99,10 +111,10 @@ export function Sidebar() {
         </button>
         <div className="flex items-center gap-2 px-3">
           <div className="flex items-center gap-1.5">
-            <div className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+            <div className={`w-2 h-2 rounded-full ${connectedChannels > 0 ? "bg-emerald-400" : "bg-red-400 animate-pulse"}`} />
             <span className="text-[#6b7294]" style={{ fontSize: '0.75rem' }}>연동 상태</span>
           </div>
-          <span className="text-[#6b7294]" style={{ fontSize: '0.75rem' }}>· 연동 필요</span>
+          <span className="text-[#6b7294]" style={{ fontSize: '0.75rem' }}>· {connectedChannels}개 채널 정상</span>
         </div>
       </div>
     </aside>
