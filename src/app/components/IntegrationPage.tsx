@@ -1,119 +1,235 @@
-import { Link2, AlertTriangle, Globe, Shield, ChevronRight, HelpCircle } from "lucide-react";
+import { AlertTriangle, Globe, HelpCircle, Link2, RefreshCw, Shield } from "lucide-react";
 import { PageHeader } from "./PageHeader";
+import {
+  channelStatusColor,
+  channelStatusLabel,
+  useDemoData,
+} from "../state/demo-store";
+import { formatDate, formatDateTime } from "../lib/format";
 
 const faqItems = [
-  { q: "Q. 연동이 실패했어요", a: '브라우저 팝업 차단을 해제하고 다시 시도해보세요. 혹은 재연동하기를 클릭해주세요.' },
-  { q: "Q. Merchant ID가 연동되지 않았어요", a: '다시 재연동하기 버튼을 클릭하여 Authorize Merchant를 꼭 체크 표시해주세요.' },
-  { q: "Q. 일부 지역만 연동됐다고 하던데요.", a: '다시 재연동하기 버튼을 클릭하여 8개 지역을 모두 check 표시 해주세요.' },
-  { q: "Q. 방금 인증했는데 인증 만료 알림이라고 합니다.", a: 'Authorization Period는 인증 만료 기간을 의미합니다. 해당 기간을 최대한 길게 설정해주세요(ex. 365일).' },
+  {
+    q: "Q. 채널 연동이 실패했어요",
+    a: "팝업 차단을 해제한 뒤 다시 연결을 시도하고, 권한 범위에서 상품/주문 조회 권한이 모두 체크되어 있는지 확인하세요.",
+  },
+  {
+    q: "Q. 일부 채널만 상품이 수집돼요",
+    a: "최근 동기화 시간이 오래된 채널은 토큰 재발급이 필요할 수 있습니다. 경고 상태 채널부터 새로고침을 실행하세요.",
+  },
+  {
+    q: "Q. 주문 상태가 늦게 반영돼요",
+    a: "채널별 수집 주기가 달라서 수분 단위 지연이 있을 수 있습니다. 주문 동기화를 실행하면 즉시 최신 상태를 반영합니다.",
+  },
 ];
 
 const steps = [
-  '"Shopee 연동하기" or "재연동하기" 버튼을 클릭합니다',
-  '새 창에서 Shopee 로그인 페이지가 열립니다',
-  '이때 "Switch to Main(sub) Account" 버튼을 눌리고 Shopee 계정(ex. xxxxx:main)으로 로그인합니다',
-  'Authorize Merchant를 꼭 체크 표시해주세요.',
-  '운영중인 모든 지역을 모두 check 표시 해주세요.',
-  'Authorization Period(연동 기간)을 설정해주세요(ex. 365일).',
-  '"Confirm Authorization" 버튼을 눌러주세요.',
-  '연동이 성공적으로 완료되면 Shopee 연동 관리 페이지에서 연동 상태가 연동됨으로 변경됩니다.',
+  "채널 연동 관리에서 연결할 마켓을 선택합니다.",
+  "새 창에서 각 채널의 판매자 인증을 완료합니다.",
+  "상품/주문 조회 권한과 재고 동기화 범위를 체크합니다.",
+  "연동이 완료되면 마지막 동기화 시각과 토큰 만료일을 확인합니다.",
+  "경고 상태 채널은 주기적으로 새로고침해 데이터 누락을 방지합니다.",
 ];
 
 export function IntegrationPage() {
+  const { channels, connectChannel, refreshChannel, isLoading, isRefreshing, error } = useDemoData();
+
+  const connectedCount = channels.filter((channel) => channel.status === "connected").length;
+  const warningCount = channels.filter((channel) => channel.status === "warning").length;
+  const disconnectedCount = channels.filter((channel) => channel.status === "disconnected").length;
+  const nearestExpiry = channels
+    .filter((channel) => channel.tokenExpiresAt !== null)
+    .sort((a, b) => (a.tokenExpiresAt ?? "").localeCompare(b.tokenExpiresAt ?? ""))[0];
+
   return (
-    <div className="p-6 space-y-6 max-w-[1200px] mx-auto">
+    <div className="mx-auto max-w-[1200px] space-y-6 p-4 md:p-6">
       <PageHeader
-        title="Shopee 연동 관리"
-        description="Shopee 계정 연동 상태를 확인하고 관리합니다"
+        title="채널 연동 관리"
+        description="네이버, 쿠팡, 11번가 등 판매 채널의 연결 상태와 토큰 만료 일정을 한 번에 관리합니다"
       />
 
-      {/* Warning */}
-      <div className="bg-red-50 border border-red-200 rounded-2xl p-5">
-        <div className="flex items-center gap-2 text-red-600 mb-1" style={{ fontWeight: 600 }}>
-          <AlertTriangle className="w-5 h-5" />
-          Merchant ID 미연동
+      {error ? (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-5">
+          <div className="mb-1 flex items-center gap-2 text-red-600" style={{ fontWeight: 600 }}>
+            <AlertTriangle className="w-5 h-5" />
+            채널 API 연결 실패
+          </div>
+          <p className="text-red-500" style={{ fontSize: "0.85rem" }}>{error}</p>
         </div>
-        <p className="text-red-500" style={{ fontSize: '0.85rem' }}>Merchant ID가 연동되지 않았습니다. 서비스 사용이 제한될 수 있습니다.</p>
-      </div>
+      ) : (warningCount > 0 || disconnectedCount > 0) && (
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-5">
+          <div className="mb-1 flex items-center gap-2 text-red-600" style={{ fontWeight: 600 }}>
+            <AlertTriangle className="w-5 h-5" />
+            확인이 필요한 채널이 있습니다
+          </div>
+          <p className="text-red-500" style={{ fontSize: "0.85rem" }}>
+            토큰 만료 임박 {warningCount}개, 미연동 {disconnectedCount}개 채널이 있어 상품/주문 수집이 끊길 수 있습니다.
+          </p>
+        </div>
+      )}
 
-      {/* Status cards */}
-      <div className="grid grid-cols-2 gap-5">
-        <div className="bg-white rounded-2xl border border-border p-6">
-          <h3 className="flex items-center gap-2 mb-4">
-            <div className="w-2 h-2 rounded-full bg-red-400" />
+      <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+        <div className="rounded-2xl border border-border bg-white p-6">
+          <h3 className="mb-4 flex items-center gap-2" style={{ fontWeight: 600 }}>
+            <div className="h-2 w-2 rounded-full bg-emerald-400" />
             연동 상태
           </h3>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-[#6b7294]" style={{ fontSize: '0.85rem' }}>현재 상태</span>
-              <span className="px-3 py-1 bg-red-100 text-red-600 rounded-lg" style={{ fontSize: '0.8rem', fontWeight: 600 }}>연동 안됨</span>
+              <span className="text-[#6b7294]" style={{ fontSize: "0.85rem" }}>정상 연결</span>
+              <span className="rounded-lg bg-emerald-50 px-3 py-1 text-emerald-700" style={{ fontSize: "0.8rem", fontWeight: 600 }}>{connectedCount}개</span>
             </div>
             <div className="flex items-center justify-between">
-              <span className="text-[#6b7294]" style={{ fontSize: '0.85rem' }}>Merchant ID</span>
-              <div className="flex items-center gap-1 text-[#a0a4b8]" style={{ fontSize: '0.85rem' }}>
-                미연동
-                <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
-              </div>
+              <span className="text-[#6b7294]" style={{ fontSize: "0.85rem" }}>주의 필요</span>
+              <span className="rounded-lg bg-amber-50 px-3 py-1 text-amber-700" style={{ fontSize: "0.8rem", fontWeight: 600 }}>{warningCount}개</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[#6b7294]" style={{ fontSize: "0.85rem" }}>미연동</span>
+              <span className="rounded-lg bg-slate-100 px-3 py-1 text-slate-600" style={{ fontSize: "0.8rem", fontWeight: 600 }}>{disconnectedCount}개</span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-border p-6">
-          <h3 className="flex items-center gap-2 mb-4">
+        <div className="rounded-2xl border border-border bg-white p-6">
+          <h3 className="mb-4 flex items-center gap-2" style={{ fontWeight: 600 }}>
             <Shield className="w-5 h-5 text-[#3b6cf5]" />
             인증 정보
           </h3>
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-[#6b7294]" style={{ fontSize: '0.85rem' }}>인증 만료일</span>
-              <span className="text-[#a0a4b8]" style={{ fontSize: '0.85rem' }}>정보 없음</span>
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-[#6b7294]" style={{ fontSize: "0.85rem" }}>가장 빠른 만료일</span>
+              <span className="text-right text-[#1a1d2e]" style={{ fontSize: "0.85rem", fontWeight: 600 }}>
+                {nearestExpiry?.tokenExpiresAt ? formatDate(nearestExpiry.tokenExpiresAt) : "정보 없음"}
+              </span>
+            </div>
+            <div className="flex items-center justify-between gap-4">
+              <span className="text-[#6b7294]" style={{ fontSize: "0.85rem" }}>관리 우선 채널</span>
+              <span className="text-right text-[#1a1d2e]" style={{ fontSize: "0.85rem", fontWeight: 600 }}>
+                {nearestExpiry?.name ?? "없음"}
+              </span>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-2xl border border-border p-6">
-          <h3 className="flex items-center gap-2 mb-4">
+        <div className="rounded-2xl border border-border bg-white p-6">
+          <h3 className="mb-4 flex items-center gap-2" style={{ fontWeight: 600 }}>
             <Globe className="w-5 h-5 text-[#3b6cf5]" />
-            연동 지역
+            수집 현황
           </h3>
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-[#6b7294]" style={{ fontSize: '0.85rem' }}>연동된 지역</span>
-            <span className="text-[#1a1d2e]" style={{ fontSize: '0.85rem', fontWeight: 600 }}>0/8개국</span>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-[#6b7294]" style={{ fontSize: "0.85rem" }}>상품 동기화</span>
+              <span className="text-[#1a1d2e]" style={{ fontSize: "0.85rem", fontWeight: 600 }}>
+                {channels.reduce((sum, channel) => sum + channel.productsSynced, 0)}개
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-[#6b7294]" style={{ fontSize: "0.85rem" }}>주문 동기화</span>
+              <span className="text-[#1a1d2e]" style={{ fontSize: "0.85rem", fontWeight: 600 }}>
+                {channels.reduce((sum, channel) => sum + channel.ordersSynced, 0)}건
+              </span>
+            </div>
           </div>
-          <p className="text-[#a0a4b8]" style={{ fontSize: '0.8rem' }}>
-            ⊕ 추가 지역 연동을 통해 더 많은 상품 관리가 가능합니다
-          </p>
         </div>
 
-        <div className="bg-white rounded-2xl border border-border p-6">
-          <h3 className="flex items-center gap-2 mb-4">
+        <div className="rounded-2xl border border-border bg-white p-6">
+          <h3 className="mb-4 flex items-center gap-2" style={{ fontWeight: 600 }}>
             <Link2 className="w-5 h-5 text-[#3b6cf5]" />
-            연동 관리
+            빠른 액션
           </h3>
-          <button className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-[#3b6cf5] text-white rounded-xl hover:bg-[#2d5ae0] transition-colors shadow-sm" style={{ fontSize: '0.9rem', fontWeight: 500 }}>
-            <Link2 className="w-4 h-4" />
-            Shopee 연동하기
-          </button>
-          <p className="text-[#6b7294] text-center mt-3" style={{ fontSize: '0.8rem' }}>Shopee 계정과 연동하여 상품 관리를 시작하세요</p>
+          <div className="space-y-3">
+            <button
+              onClick={() => {
+                channels.forEach((channel) => {
+                  void connectChannel(channel.id);
+                });
+              }}
+              disabled={isRefreshing || isLoading}
+              className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#3b6cf5] px-5 py-3 text-white shadow-sm transition-colors hover:bg-[#2d5ae0] disabled:cursor-not-allowed disabled:bg-[#9cb4fb]"
+              style={{ fontSize: "0.9rem", fontWeight: 500 }}
+            >
+              <Link2 className="w-4 h-4" />
+              모든 채널 연결 상태 갱신
+            </button>
+            <p className="text-center text-[#6b7294]" style={{ fontSize: "0.8rem" }}>
+              연동이 끊긴 채널도 한 번에 다시 연결 대상으로 전환합니다.
+            </p>
+          </div>
         </div>
       </div>
 
-      {/* Guide & FAQ */}
-      <div className="bg-white rounded-2xl border border-border p-6">
-        <h3 className="flex items-center gap-2 mb-5">
+      <div className="rounded-2xl border border-border bg-white p-6">
+        <h3 className="mb-5 text-[#1a1d2e]" style={{ fontWeight: 600 }}>
+          채널별 연동 상태
+        </h3>
+        <div className="grid gap-4 lg:grid-cols-2">
+          {channels.map((channel) => (
+            <div key={channel.id} className="rounded-xl border border-border p-5">
+              <div className="mb-3 flex items-start justify-between gap-3">
+                <div>
+                  <p className="text-[#1a1d2e]" style={{ fontWeight: 600 }}>{channel.name}</p>
+                  <p className="mt-1 text-[#6b7294]" style={{ fontSize: "0.8rem" }}>
+                    상품 {channel.productsSynced}개 · 주문 {channel.ordersSynced}건 수집됨
+                  </p>
+                </div>
+                <span className={`rounded-full px-2.5 py-1 ${channelStatusColor[channel.status]}`} style={{ fontSize: "0.74rem", fontWeight: 600 }}>
+                  {channelStatusLabel[channel.status]}
+                </span>
+              </div>
+              <div className="space-y-2 text-[#4a4f6a]" style={{ fontSize: "0.82rem" }}>
+                <div className="flex items-center justify-between gap-4">
+                  <span>마지막 동기화</span>
+                  <span>{channel.syncedAt ? formatDateTime(channel.syncedAt) : "아직 없음"}</span>
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <span>토큰 만료일</span>
+                  <span>{channel.tokenExpiresAt ? formatDate(channel.tokenExpiresAt) : "연결 후 발급"}</span>
+                </div>
+              </div>
+              <div className="mt-4 flex gap-2">
+                {channel.status === "disconnected" ? (
+                  <button
+                    onClick={() => void connectChannel(channel.id)}
+                    disabled={isRefreshing}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl bg-[#3b6cf5] px-4 py-2.5 text-white transition-colors hover:bg-[#2d5ae0] disabled:cursor-not-allowed disabled:bg-[#9cb4fb]"
+                    style={{ fontSize: "0.82rem", fontWeight: 600 }}
+                  >
+                    <Link2 className="w-4 h-4" />
+                    채널 연결
+                  </button>
+                ) : (
+                  <button
+                    onClick={() => void refreshChannel(channel.id)}
+                    disabled={isRefreshing}
+                    className="flex flex-1 items-center justify-center gap-2 rounded-xl border border-[#3b6cf5] px-4 py-2.5 text-[#3b6cf5] transition-colors hover:bg-[#f0f4ff] disabled:cursor-not-allowed disabled:border-border disabled:text-[#a0a4b8]"
+                    style={{ fontSize: "0.82rem", fontWeight: 600 }}
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    상태 새로고침
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-white p-6">
+        <h3 className="mb-5 flex items-center gap-2" style={{ fontWeight: 600 }}>
           <HelpCircle className="w-5 h-5 text-[#3b6cf5]" />
           연동 가이드 & FAQ
         </h3>
 
         <div className="mb-6">
-          <h4 className="flex items-center gap-2 mb-3">
+          <h4 className="mb-3 flex items-center gap-2" style={{ fontWeight: 600 }}>
             <Link2 className="w-4 h-4 text-[#3b6cf5]" />
-            Shopee 연동 절차
+            멀티채널 연동 절차
           </h4>
           <ol className="space-y-2 pl-1">
-            {steps.map((step, i) => (
-              <li key={i} className="flex items-start gap-3 text-[#4a4f6a]" style={{ fontSize: '0.85rem' }}>
-                <span className="w-5 h-5 rounded-full bg-[#f0f4ff] text-[#3b6cf5] flex items-center justify-center shrink-0" style={{ fontSize: '0.7rem', fontWeight: 600 }}>{i + 1}</span>
+            {steps.map((step, index) => (
+              <li key={step} className="flex items-start gap-3 text-[#4a4f6a]" style={{ fontSize: "0.85rem" }}>
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-[#f0f4ff] text-[#3b6cf5]" style={{ fontSize: "0.7rem", fontWeight: 600 }}>
+                  {index + 1}
+                </span>
                 {step}
               </li>
             ))}
@@ -121,15 +237,15 @@ export function IntegrationPage() {
         </div>
 
         <div>
-          <h4 className="flex items-center gap-2 mb-3">
+          <h4 className="mb-3 flex items-center gap-2" style={{ fontWeight: 600 }}>
             <HelpCircle className="w-4 h-4 text-[#f59e0b]" />
             자주 묻는 질문
           </h4>
           <div className="space-y-4">
-            {faqItems.map((item, i) => (
-              <div key={i} className="p-4 bg-[#f8f9fc] rounded-xl">
-                <p className="text-[#1a1d2e] mb-1" style={{ fontSize: '0.85rem', fontWeight: 600 }}>{item.q}</p>
-                <p className="text-[#6b7294]" style={{ fontSize: '0.8rem' }}>{item.a}</p>
+            {faqItems.map((item) => (
+              <div key={item.q} className="rounded-xl bg-[#f8f9fc] p-4">
+                <p className="mb-1 text-[#1a1d2e]" style={{ fontSize: "0.85rem", fontWeight: 600 }}>{item.q}</p>
+                <p className="text-[#6b7294]" style={{ fontSize: "0.8rem" }}>{item.a}</p>
               </div>
             ))}
           </div>

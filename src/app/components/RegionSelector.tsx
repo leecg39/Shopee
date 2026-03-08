@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const regions = [
+export const regions = [
   { code: "SG", flag: "🇸🇬", name: "싱가포르", connected: true },
   { code: "VN", flag: "🇻🇳", name: "베트남", connected: false },
   { code: "TH", flag: "🇹🇭", name: "태국", connected: false },
@@ -11,8 +11,22 @@ const regions = [
   { code: "MX", flag: "🇲🇽", name: "멕시코", connected: false },
 ];
 
-export function RegionSelector() {
-  const [selected, setSelected] = useState("SG");
+interface RegionSelectorProps {
+  value?: string;
+  onChange?: (regionCode: string) => void;
+}
+
+export function RegionSelector({ value, onChange }: RegionSelectorProps) {
+  const [internalSelected, setInternalSelected] = useState("SG");
+  const selected = value ?? internalSelected;
+
+  const handleSelect = (regionCode: string) => {
+    if (value === undefined) {
+      setInternalSelected(regionCode);
+    }
+
+    onChange?.(regionCode);
+  };
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
@@ -22,7 +36,7 @@ export function RegionSelector() {
       {regions.map((r) => (
         <button
           key={r.code}
-          onClick={() => setSelected(r.code)}
+          onClick={() => handleSelect(r.code)}
           className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-all ${
             selected === r.code
               ? "bg-[#3b6cf5] text-white shadow-sm"
