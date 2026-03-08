@@ -30,7 +30,7 @@ export function NotificationsPage() {
           channel.status === "warning"
             ? "토큰 만료가 임박했습니다. 재연동하지 않으면 주문 수집이 멈출 수 있습니다."
             : "아직 연결되지 않은 채널입니다. 상품/주문 수집이 비활성화되어 있습니다.",
-        category: "채널 연동",
+        category: "Shopee 연동",
         level: channel.status === "warning" ? "warning" : "critical",
         timestamp: channel.syncedAt ?? new Date().toISOString(),
       }));
@@ -59,12 +59,12 @@ export function NotificationsPage() {
   }, [channels, orders, products]);
 
   const pushAlerts = useMemo(
-    () => alerts.filter((alert) => alert.category === "채널 연동" || (alert.category === "재고" && alert.level !== "info")),
+    () => alerts.filter((alert) => alert.category === "Shopee 연동" || (alert.category === "재고" && alert.level !== "info")),
     [alerts],
   );
 
   const goToAlertTarget = (category: string) => {
-    if (category === "채널 연동") {
+    if (category === "Shopee 연동") {
       navigate("/integration");
       return;
     }
@@ -133,7 +133,7 @@ export function NotificationsPage() {
                     </p>
                   </div>
                   <p className="mt-1 text-[#6b7294]" style={{ fontSize: "0.78rem" }}>
-                    {alert.category === "채널 연동" ? "푸시 + 알림톡" : "푸시 알림"} · {formatDateTime(alert.timestamp)}
+                    {alert.category === "Shopee 연동" ? "푸시 + 알림톡" : "푸시 알림"} · {formatDateTime(alert.timestamp)}
                   </p>
                 </div>
                 <button
@@ -179,14 +179,14 @@ export function NotificationsPage() {
                 </div>
                 <p className="text-[#6b7294]" style={{ fontSize: "0.82rem", lineHeight: 1.6 }}>{alert.description}</p>
                 <div className="mt-2 flex items-center gap-2 text-[#a0a4b8]" style={{ fontSize: "0.74rem" }}>
-                  {alert.category === "채널 연동" ? <Link2 className="h-3.5 w-3.5" /> : <Bell className="h-3.5 w-3.5" />}
+                  {alert.category === "Shopee 연동" ? <Link2 className="h-3.5 w-3.5" /> : <Bell className="h-3.5 w-3.5" />}
                   {formatDateTime(alert.timestamp)}
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <EmptyState title="현재 확인할 알림이 없습니다" description="주문, 재고, 채널 연동 상태가 모두 안정적입니다." />
+          <EmptyState title="현재 확인할 알림이 없습니다" description="주문, 재고, Shopee 연동 상태가 모두 안정적입니다." />
         )}
       </div>
     </div>

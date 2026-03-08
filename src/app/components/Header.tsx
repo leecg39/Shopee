@@ -8,7 +8,7 @@ export function Header() {
     <header className="sticky top-0 z-10 flex h-16 items-center justify-end gap-2 border-b border-border bg-white px-4 md:px-6">
       <Link to="/integration" className="flex items-center gap-2 rounded-xl bg-[#3b6cf5] px-4 py-2 text-white shadow-sm transition-colors hover:bg-[#2d5ae0]" style={{ fontSize: '0.85rem', fontWeight: 500 }}>
         <Link2 className="w-4 h-4" />
-        채널 연동
+        Shopee 연동
       </Link>
       <Link to="/notifications" className="flex items-center gap-2 rounded-xl px-3 py-2 text-[#4a4f6a] transition-colors hover:bg-[#f0f4ff]" style={{ fontSize: '0.85rem', fontWeight: 500 }}>
         <Bell className="w-4 h-4" />

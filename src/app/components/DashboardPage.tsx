@@ -94,10 +94,14 @@ export function DashboardPage() {
       label: "판매 비중",
       color: "#3b6cf5",
     },
-    Naver: { label: "네이버", color: "#10b981" },
-    Coupang: { label: "쿠팡", color: "#3b6cf5" },
-    "11st": { label: "11번가", color: "#f59e0b" },
-    Gmarket: { label: "G마켓", color: "#8b5cf6" },
+    SG: { label: "싱가포르", color: "#10b981" },
+    MY: { label: "말레이시아", color: "#3b6cf5" },
+    TH: { label: "태국", color: "#f59e0b" },
+    ID: { label: "인도네시아", color: "#8b5cf6" },
+    PH: { label: "필리핀", color: "#ef4444" },
+    VN: { label: "베트남", color: "#06b6d4" },
+    TW: { label: "대만", color: "#f97316" },
+    BR: { label: "브라질", color: "#84cc16" },
   } as const;
 
   const trendConfig = {
@@ -110,8 +114,8 @@ export function DashboardPage() {
   const guideSteps = [
     {
       icon: Link2,
-      title: "판매 채널 연동",
-      desc: `${connectedChannels}/${channels.length}개 채널 연결`,
+      title: "Shopee 연동",
+      desc: `${connectedChannels}/${channels.length}개 지역 연결`,
       complete: connectedChannels >= 2,
       action: "연동 확인",
       path: "/integration",
@@ -161,7 +165,7 @@ export function DashboardPage() {
     <div className="mx-auto max-w-[1200px] space-y-6 p-4 md:p-6">
       <PageHeader
         title="대시보드"
-        description="PRD 기준 멀티채널 판매 현황과 운영 우선순위를 한 화면에서 관리합니다"
+        description="Shopee 8개국 판매 현황과 운영 우선순위를 한 화면에서 관리합니다"
         actions={
           <div className="flex flex-wrap items-center gap-3">
             <div className="rounded-xl border border-border bg-white px-3 py-2 text-[#6b7294]" style={{ fontSize: "0.8rem" }}>
@@ -244,7 +248,7 @@ export function DashboardPage() {
                 최근 주문 현황
               </h3>
               <p className="text-[#6b7294]" style={{ fontSize: "0.8rem" }}>
-                채널별 주문 상태를 빠르게 확인하고 송장 입력으로 이어집니다.
+                지역별 주문 상태를 빠르게 확인하고 송장 입력으로 이어집니다.
               </p>
             </div>
             <span className="text-[#6b7294]" style={{ fontSize: "0.78rem" }}>
@@ -351,7 +355,7 @@ export function DashboardPage() {
         <div className="rounded-2xl border border-border bg-white p-6">
           <h3 className="mb-4 flex items-center gap-2 text-[#1a1d2e]" style={{ fontWeight: 600 }}>
             <ChartPie className="w-5 h-5 text-[#3b6cf5]" />
-            채널별 판매 비중
+            지역별 판매 비중
           </h3>
           <ChartContainer config={channelShareConfig} className="h-[280px] w-full">
             <PieChart>

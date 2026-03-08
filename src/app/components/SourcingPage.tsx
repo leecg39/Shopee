@@ -29,7 +29,7 @@ export function SourcingPage() {
         </button>
       </div>
 
-      <InfoBanner message="원클릭 AI 대량 소싱 기능은 판매채널 연동 후 사용 가능합니다. 지금 바로" linkText="연동하기" linkTo="/integration" />
+      <InfoBanner message="원클릭 AI 대량 소싱 기능은 Shopee 연동 후 사용 가능합니다. 지금 바로" linkText="연동하기" linkTo="/integration" />
 
       <PageHeader
         icon={Sparkles}
@@ -112,9 +112,9 @@ export function SourcingPage() {
       <div className="bg-white rounded-2xl border border-border">
         <EmptyState
           icon={Link2}
-          title="채널 연동이 필요합니다"
-          description="원클릭 AI 대량 소싱 기능을 사용하려면 먼저 판매채널 계정을 연동해주세요."
-          actionLabel="채널 연동하러 가기"
+          title="Shopee 연동이 필요합니다"
+          description="원클릭 AI 대량 소싱 기능을 사용하려면 먼저 Shopee 계정을 연동해주세요."
+          actionLabel="Shopee 연동하러 가기"
           onAction={() => navigate("/integration")}
         />
       </div>

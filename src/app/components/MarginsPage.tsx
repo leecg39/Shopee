@@ -171,7 +171,7 @@ export function MarginsPage() {
       <PageHeader
         icon={TrendingUp}
         title="상품 마진 분석"
-        description="채널별 원가, 수수료, 예상 정산액을 기준으로 수익성을 빠르게 판단합니다"
+        description="지역별 원가, 수수료, 예상 정산액을 기준으로 수익성을 빠르게 판단합니다"
         actions={
           <button
             onClick={() => void syncProducts()}

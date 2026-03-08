@@ -90,7 +90,7 @@ export function CostPage() {
       <PageHeader
         icon={DollarSign}
         title="상품 통합 관리"
-        description="채널별 상품 원가를 관리하고 통합 카탈로그 기준으로 정렬합니다"
+        description="지역별 상품 원가를 관리하고 통합 카탈로그 기준으로 정렬합니다"
         actions={
           <div className="flex flex-wrap items-center gap-2">
             <button
@@ -138,7 +138,7 @@ export function CostPage() {
         </button>
         {guideOpen ? (
           <p className="mt-3 text-[#6b7294]" style={{ fontSize: "0.8rem", lineHeight: 1.6 }}>
-            채널별 상품명은 달라도 기준 카테고리와 원가를 하나로 맞춰두면 마진, 주문, 재고 화면에서 동일한 기준으로 집계됩니다.
+            지역별 상품명은 달라도 기준 카테고리와 원가를 하나로 맞춰두면 마진, 주문, 재고 화면에서 동일한 기준으로 집계됩니다.
           </p>
         ) : null}
       </div>

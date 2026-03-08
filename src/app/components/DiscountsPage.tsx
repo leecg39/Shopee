@@ -123,7 +123,7 @@ export function DiscountsPage() {
         }
       />
 
-      <InfoBanner message="대량 할인 기능은 판매채널 연동 후 사용 가능합니다. 지금 바로" linkText="연동하기" linkTo="/integration" />
+      <InfoBanner message="대량 할인 기능은 Shopee 연동 후 사용 가능합니다. 지금 바로" linkText="연동하기" linkTo="/integration" />
 
       <div className="bg-white rounded-2xl border border-border p-5">
         <button onClick={() => setGuideOpen((current) => !current)} className="flex w-full items-center gap-2 text-[#3b6cf5]" style={{ fontSize: '0.85rem', fontWeight: 500 }}>
@@ -252,7 +252,7 @@ export function DiscountsPage() {
             icon={Clock}
             title="계산 히스토리가 없습니다"
             description="위에서 할인가를 계산해보세요"
-            actionLabel="채널 연동하러 가기"
+            actionLabel="Shopee 연동하러 가기"
             onAction={() => navigate('/integration')}
           />
         )}

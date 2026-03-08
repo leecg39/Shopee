@@ -139,7 +139,7 @@ export function CampaignPage() {
         }
       />
 
-      <InfoBanner message="캠페인 가격 최적화는 판매채널 연동 후 사용 가능합니다. 지금 바로" linkText="연동하기" linkTo="/integration" />
+      <InfoBanner message="캠페인 가격 최적화는 Shopee 연동 후 사용 가능합니다. 지금 바로" linkText="연동하기" linkTo="/integration" />
 
       <div className="bg-white rounded-2xl border border-border p-5">
         <button onClick={() => setGuideOpen((current) => !current)} className="flex w-full items-center gap-2 text-[#3b6cf5]" style={{ fontSize: '0.85rem', fontWeight: 500 }}>
@@ -275,7 +275,7 @@ export function CampaignPage() {
             icon={Clock}
             title="캠페인 분석 히스토리가 없습니다"
             description="위에서 캠페인 파일을 업로드해보세요"
-            actionLabel="채널 연동하러 가기"
+            actionLabel="Shopee 연동하러 가기"
             onAction={() => navigate('/integration')}
           />
         )}

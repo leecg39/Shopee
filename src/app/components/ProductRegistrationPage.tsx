@@ -161,7 +161,7 @@ export function ProductRegistrationPage() {
             <input
               value={form.sourceLabel}
               onChange={(event) => updateField("sourceLabel", event.target.value)}
-              placeholder="예: 올리브영 강남점 / 쿠팡 공급처"
+              placeholder="예: 올리브영 강남점 / 도매 공급처"
               className="w-full rounded-xl border border-border bg-[#f8f9fc] px-3 py-2.5"
               style={{ fontSize: "0.85rem" }}
             />

@@ -53,7 +53,7 @@ export function Sidebar() {
               <span className="text-[#1a1d2e]" style={{ fontSize: '1.1rem', fontWeight: 700 }}>셀잇</span>
               <span className="text-[#3b6cf5]" style={{ fontSize: '1.1rem', fontWeight: 700 }}>파파</span>
             </div>
-            <p className="text-[#6b7294]" style={{ fontSize: '0.7rem' }}>멀티채널 이커머스 통합 관리</p>
+            <p className="text-[#6b7294]" style={{ fontSize: '0.7rem' }}>Shopee 8개국 크로스보더 판매</p>
           </div>
         </div>
       </div>
