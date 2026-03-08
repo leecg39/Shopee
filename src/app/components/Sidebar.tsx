@@ -27,7 +27,7 @@ const navItems = [
   { path: "/discounts", label: "대량 할인", icon: Percent },
   { path: "/campaign", label: "캠페인 가격", icon: Tag },
   { path: "/sourcing", label: "대량 소싱", icon: Sparkles, badge: "부가 서비스" },
-  { path: "/integration", label: "채널 연동", icon: Link2 },
+  { path: "/integration", label: "Shopee 연동", icon: Link2 },
   { path: "/products/register", label: "상품 등록", icon: Camera },
   { path: "/shipping", label: "포장 & 배송", icon: Truck },
   { path: "/notifications", label: "알림 센터", icon: Bell },

@@ -13,6 +13,7 @@ import { SourcingPage } from "./components/SourcingPage";
 import { IntegrationPage } from "./components/IntegrationPage";
 import { InventoryPage } from "./components/InventoryPage";
 import { NotificationsPage } from "./components/NotificationsPage";
+import { OAuthCallbackPage } from "./components/OAuthCallbackPage";
 
 export const router = createBrowserRouter([
   {
@@ -22,6 +23,11 @@ export const router = createBrowserRouter([
   {
     path: "/landing",
     Component: LandingPage,
+  },
+  {
+    // Shopee OAuth callback — outside Layout (no sidebar/header)
+    path: "/oauth/callback",
+    Component: OAuthCallbackPage,
   },
   {
     path: "/",
